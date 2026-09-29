@@ -88,7 +88,7 @@ const WALKTHROUGH_SLIDES: WalkthroughSlide[] = [
   {
     chapter: 9,
     title: "Pay by EFT — no card fees",
-    caption: `Start with 1 free credit. Top up with a ${PAYG_PRICE} single analysis or subscribe to Starter, Pro, or Scale.`,
+    caption: `Start with 5 free credits. Top up with a ${PAYG_PRICE} single analysis or subscribe to Starter, Pro, or Scale.`,
     image: "/help-slides/billing.jpg",
   },
   {
@@ -390,7 +390,7 @@ export function HelpContent() {
 
         <ReferenceSection id="billing" title="Credits & Subscriptions">
           <p>
-            New companies start with <strong>1 free tender analysis</strong>. Each Analyze Tender
+            New companies start with <strong>5 free tender analyses</strong>. Each Analyze Tender
             run consumes one credit. If extraction fails (unparseable JSON, PDF error, timeout), we
             refund the credit automatically. Top up with a{" "}
             <strong>Single Analysis pack ({PAYG_PRICE})</strong> or subscribe monthly —{" "}

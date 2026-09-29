@@ -312,7 +312,7 @@ function AboutPage() {
               Ready to stop losing tenders on technicalities?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              Start with 1 free tender analysis on signup. No card required.
+              Start with 5 free tender analyses on signup. No card required.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button

@@ -125,7 +125,7 @@ function TermsPage() {
               forfeited at the start of the next cycle.
             </p>
             <p>
-              New accounts receive <strong>one free trial credit</strong> when the company profile
+              New accounts receive <strong>five free trial credits</strong> when the company profile
               is first created.
             </p>
             <p>

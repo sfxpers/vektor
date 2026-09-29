@@ -108,7 +108,7 @@ function SignupPage() {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Start with 1 free tender analysis. No credit card."
+      subtitle="Start with 5 free tender analyses. No credit card."
       footer={
         <>
           Already have an account?{" "}
@@ -144,7 +144,7 @@ function SignupPage() {
               <span className="text-muted-foreground"> at {refPreview.referrer_company}</span>
             )}{" "}
             invited you to try Vektor. Get{" "}
-            <strong className="text-primary">1 free tender analysis</strong> to see how it works —
+            <strong className="text-primary">5 free tender analyses</strong> to see how it works —
             no credit card required.
           </AlertDescription>
         </Alert>

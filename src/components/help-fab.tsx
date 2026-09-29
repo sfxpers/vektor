@@ -54,7 +54,7 @@ const PAGE_TIPS: Record<string, { title: string; tips: string[] }> = {
   "/billing": {
     title: "Credits & subscriptions",
     tips: [
-      "New companies get 1 free analysis credit on signup.",
+      "New companies get 5 free analysis credits on signup.",
       "Pay by EFT — credits are added once an admin verifies your deposit.",
       "Subscribers keep unused credits, up to 2× their monthly allowance.",
     ],

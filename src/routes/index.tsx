@@ -238,7 +238,7 @@ const Hero = () => (
             size="lg"
             className="text-base font-bold"
           >
-            Start with 1 free analysis
+            Start with 5 free analyses
             <ArrowRight aria-hidden="true" />
           </Button>
           <Link
@@ -808,8 +808,9 @@ const FinalCta = () => (
             Your next bid could go <span className="text-primary">out this afternoon.</span>
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground lg:text-lg">
-            Start with 1 free tender analysis. No credit card, no setup call, no gateway
-            integration. Just paste in a PDF and see what Vektor finds.
+            Start with <strong className="text-foreground">5 free tender analyses</strong>. No
+            credit card, no setup call, no gateway integration. Just paste in a PDF and see what
+            Vektor finds.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Button
@@ -823,7 +824,7 @@ const FinalCta = () => (
               size="lg"
               className="text-base font-bold"
             >
-              Start with 1 free analysis
+              Start with 5 free analyses
               <ArrowRight aria-hidden="true" />
             </Button>
             <Link

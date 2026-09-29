@@ -94,8 +94,8 @@ export const Route = createFileRoute("/api/companies/")({
         const id = crypto.randomUUID();
         const db = createDb(env.DB);
 
-        // Company + trial credit in one D1 batch so a retry after a partial
-        // write cannot skip the free credit.
+        // Company + trial credits in one D1 batch so a retry after a partial
+        // write cannot skip the free credits.
         await db.batch([
           db.insert(companies).values({
             id,
@@ -116,7 +116,7 @@ export const Route = createFileRoute("/api/companies/")({
             createdAt: now,
             updatedAt: now,
           }),
-          db.insert(companyCredits).values({ companyId: id, credits: 1, updatedAt: now }),
+          db.insert(companyCredits).values({ companyId: id, credits: 5, updatedAt: now }),
         ]);
 
         try {

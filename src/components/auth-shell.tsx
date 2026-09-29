@@ -41,7 +41,7 @@ export function AuthShell({
           <ul className="space-y-2.5 pt-2 text-sm text-foreground">
             <li className="flex items-start gap-2.5">
               <span className="mt-1 h-2 w-2 rounded-full bg-primary" />
-              <span>1 free tender analysis on signup</span>
+              <span>5 free tender analyses on signup</span>
             </li>
             <li className="flex items-start gap-2.5">
               <span className="mt-1 h-2 w-2 rounded-full bg-primary" />

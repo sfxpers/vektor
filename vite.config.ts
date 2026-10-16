@@ -13,14 +13,11 @@ export default defineConfig({
     ignorePatterns: [".agents/**", "src/routeTree.gen.ts"],
   },
   lint: {
-    plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y"],
+    plugins: ["typescript", "react", "unicorn", "oxc", "import", "vitest", "jsx-a11y"],
     ignorePatterns: [".agents/**", "src/routeTree.gen.ts", "src/components/ui/**"],
     options: {
       typeAware: true,
       typeCheck: true,
-    },
-    rules: {
-      "react/react-in-jsx-scope": "off",
     },
   },
   run: {

@@ -9,7 +9,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     # A hung step fails within the hour, not at GitHub's six.
-    timeout-minutes: 50
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       # The v1 tag is frozen and no longer moves.
@@ -18,13 +18,13 @@ jobs:
           node-version-file: .node-version
           cache: true
       - run: vp check
+      - run: vp run check:tokens
       - run: vp test run
-      - run: vp exec playwright install --with-deps chromium webkit
       # No secrets: preflight copies .dev.vars.example, whose ENVIRONMENT="local"
       # keeps email and tender analysis on this machine (src/lib/ports.ts).
-      # About 17 minutes: one worker, Chromium then WebKit.
-      - run: vp run test:e2e
-        timeout-minutes: 35
+      # Installed Chrome. The public pages, then the one chain that spends a credit.
+      - run: vp run test:smoke
+        timeout-minutes: 15
       - if: failure()
         uses: actions/upload-artifact@v7
         with:

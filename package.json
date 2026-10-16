@@ -4,8 +4,11 @@
   "type": "module",
   "scripts": {
     "dev": "vp run db:migrate:local && vp dev --host 127.0.0.1",
+    "build": "vp build",
+    "preview": "vp preview",
     "deploy": "vp build && wrangler deploy",
     "prepare": "vp config",
+    "postinstall": "wrangler types",
     "preflight": "node scripts/ensure-dev-vars.mjs",
     "reset:d1": "node scripts/reset-local-d1.mjs",
     "seed:admin": "node scripts/seed-admin.ts",
@@ -13,8 +16,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
-    "clean": "rm -rf .output .tanstack .wrangler coverage dist node_modules/.vite playwright-report test-results",
-    "test:e2e": "vp run preflight && vp run reset:d1 && vp build && playwright test"
+    "clean": "rm -rf .output .nitro .vinxi .tanstack .wrangler .vite .vitest coverage dist dist-ssr node_modules/.vite playwright-report playwright/.cache blob-report test-results",
+    "test:smoke": "vp run preflight && vp run reset:d1 && vp build && playwright test"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -39,7 +42,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
-    "@cloudflare/vite-plugin": "^1.53.1",
+    "@cloudflare/vite-plugin": "^1.64.0",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/devtools-vite": "^0.8.3",
@@ -56,7 +59,7 @@
     "typescript": "^7.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:",
-    "wrangler": "^4.125.0"
+    "wrangler": "^4.151.0"
   },
   "packageManager": "pnpm@12.11.2"
 }

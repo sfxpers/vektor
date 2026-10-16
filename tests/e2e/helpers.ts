@@ -7,28 +7,10 @@ export const TEST_PASSWORD = "correct-horse-battery-staple-123";
 /**
  * Recipient Resend's test-mode keys accept. Live keys deliver to anything,
  * but `re_test_…` keys reject ordinary domains (including @example.com) with
- * 422. Only a remote preview sends through Resend; local runs read the local
- * mailbox instead (see localMail).
+ * 422. Only a remote preview sends through Resend; local runs keep mail in the
+ * in-memory mailbox.
  */
 export const RESEND_TEST_INBOX = "delivered@resend.dev";
-
-export interface LocalEmail {
-  id: string;
-  to: string;
-  subject: string;
-  html: string;
-  sentAt: string;
-}
-
-/**
- * What the local mailbox (src/lib/ports.ts) holds for one recipient, newest
- * first. Local runs set ENVIRONMENT="local", so no email reaches Resend.
- */
-export async function localMail(page: Page, to: string): Promise<LocalEmail[]> {
-  const response = await page.request.get(`/api/dev/mail?to=${encodeURIComponent(to)}`);
-  expect(response.ok(), 'GET /api/dev/mail needs ENVIRONMENT="local" in .dev.vars').toBe(true);
-  return (await response.json()) as LocalEmail[];
-}
 
 /** Unique per-test email — Date.now() + random suffix avoids cross-worker collisions. */
 export function uniqueEmail(prefix = "vektor"): string {
@@ -132,30 +114,6 @@ export async function createCompany(
   await expect(page.getByTestId("dashboard-title")).toBeVisible({ timeout: 20000 });
 }
 
-/** Sign up and immediately create a company — the precondition almost every flow needs. */
-export async function signUpWithCompany(
-  page: Page,
-  name: string,
-  data: {
-    ref?: string;
-    companyName?: string;
-    contactEmail?: string;
-    cipc?: string;
-    cidb?: string;
-    bbbeeLevel?: string;
-  } = {},
-): Promise<string> {
-  const email = await signUp(page, name, { ref: data.ref });
-  await createCompany(page, {
-    name: data.companyName ?? `${name} Pty Ltd`,
-    contactEmail: data.contactEmail ?? email,
-    cipc: data.cipc,
-    cidb: data.cidb,
-    bbbeeLevel: data.bbbeeLevel,
-  });
-  return email;
-}
-
 /** Log in and wait for the destination's chrome to settle before the next navigation. */
 export async function login(page: Page, email: string, password = TEST_PASSWORD): Promise<void> {
   await clearSession(page);
@@ -175,31 +133,11 @@ export async function login(page: Page, email: string, password = TEST_PASSWORD)
 }
 
 /**
- * Drive the shadcn date picker (Popover + Calendar). react-day-picker addresses
- * cells with an ISO `data-day`, which stays correct whatever month is on screen.
- * The year is set before the month because the month list is scoped to the
- * displayed year.
- */
-export async function pickDate(page: Page, triggerTestId: string, iso: string): Promise<void> {
-  const [year, month] = iso.split("-");
-  const calendar = page.locator('[data-slot="popover-content"]');
-  await page.getByTestId(triggerTestId).click();
-  await expect(calendar).toBeVisible();
-  await calendar.getByLabel("Choose the Year").selectOption(year!);
-  await calendar.getByLabel("Choose the Month").selectOption(String(Number(month) - 1));
-  await calendar.locator(`[role="gridcell"][data-day="${iso}"]`).click();
-  await page.keyboard.press("Escape");
-  await expect(calendar).toBeHidden();
-}
-
-/**
  * Ensure the company setup form is on screen for the current session.
  *
- * Right after signup the TanStack router may still be navigating client-side
- * (to `/setup`), so an immediate `page.goto("/setup")` can be interrupted
- * mid-flight (flaky on webkit). This helper waits until routing has settled
- * on either destination — the setup form or the dashboard — and only then
- * navigates explicitly when needed.
+ * Right after signup the router may still be navigating to `/setup`, so an
+ * immediate `page.goto("/setup")` can be interrupted. This waits until routing
+ * has settled on the setup form or the dashboard, and only then navigates.
  */
 export async function ensureCompanySetup(page: Page): Promise<void> {
   await expect(
@@ -217,7 +155,7 @@ export async function generateEftReference(page: Page): Promise<void> {
   const dialog = page.getByTestId("eft-payment-dialog");
   await expect(dialog).toBeVisible({ timeout: 15000 });
   // The dialog mounts while the balance and package queries are still landing,
-  // and those results re-render it — detaching the trigger mid-click on webkit.
+  // and those results re-render it, detaching the button mid-click.
   await page.waitForLoadState("networkidle");
   await dialog.getByTestId("eft-generate-reference").click();
   await expect(page.getByTestId("eft-creating")).toBeHidden({ timeout: 15000 });
@@ -257,8 +195,8 @@ export function isEftConfigured(details: EftBankDetails): boolean {
  *
  * The still-mounted SPA keeps better-auth's last session in memory; after
  * `clearCookies()` its guards react to the next poll and race whatever full
- * page load comes next (flaky "navigation interrupted" on webkit). Unloading
- * to about:blank first makes the subsequent navigation deterministic.
+ * page load comes next. Unloading to about:blank first makes the subsequent
+ * navigation deterministic.
  */
 export async function clearSession(page: Page): Promise<void> {
   await page.context().clearCookies();
@@ -276,9 +214,8 @@ export async function clearSession(page: Page): Promise<void> {
  *
  * Every spec previously rolled its own wait, and the ones that only waited for
  * an element to be *visible* could measure the page before `styles.css` had
- * applied. axe then reported Chrome's UA defaults (a #afafaf placeholder on a
- * #555557 field) as contrast failures the product does not have — a failure
- * that only appeared once the three projects contended for one preview server.
+ * applied. axe then reported the browser's own defaults as contrast failures
+ * the product does not have.
  * Waiting on a resolved design token proves the stylesheet is in the cascade.
  */
 export async function expectNoA11yViolations(page: Page, scope: string): Promise<void> {

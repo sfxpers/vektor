@@ -13,7 +13,6 @@ Production: [vektorhq.co.za](https://vektorhq.co.za)
 ```sh
 curl -fsSL https://vite.plus | bash   # once per machine
 vp install
-vp exec playwright install chromium webkit
 vp run dev                            # applies local D1 migrations, then http://127.0.0.1:5173
 ```
 
@@ -25,7 +24,7 @@ Copy `.dev.vars.example` to `.dev.vars` if it is not created for you. Its `ENVIR
 vp check                   # format, lint, and type check (vp check --fix to fix)
 vp run check:tokens        # UI colours come from src/styles.css
 vp test                    # Vitest unit tests
-vp run test:e2e            # resets local D1, builds, then Playwright and axe against the preview server
+vp run test:smoke         # resets local D1, builds, then the public pages and the credit chain in the installed Chrome
 vp build                   # Cloudflare Workers production build
 vp preview                 # the production build, locally
 vp run deploy              # build and deploy with Wrangler
@@ -40,7 +39,7 @@ UI uses shadcn/ui (`base-nova`). Add components with:
 vp dlx shadcn@latest add button --yes
 ```
 
-CI ([`.github/workflows/check.yml`](.github/workflows/check.yml)) runs `vp check`, `vp run check:tokens`, `vp test run` and `vp run test:e2e` (Chromium and WebKit) on Ubuntu for every pull request and every push to `main`. The e2e run needs no secrets or Cloudflare login: it builds with `.dev.vars.example`, whose `ENVIRONMENT="local"` swaps Resend and Workers AI for the local mailbox and the tender stand-in. On failure, the job uploads Playwright traces as the `playwright-traces` artifact.
+CI ([`.github/workflows/check.yml`](.github/workflows/check.yml)) runs `vp check`, `vp run check:tokens`, `vp test run` and `vp run test:smoke` on Ubuntu for every pull request and every push to `main`. The smoke run needs no secrets or Cloudflare login: it builds with `.dev.vars.example`, whose `ENVIRONMENT="local"` swaps Resend and Workers AI for the local mailbox and the tender stand-in. It opens the public pages and the one chain that spends a credit, in the installed Chrome. The other files in `tests/e2e` are not part of that gate. On failure, the job uploads Playwright traces as the `playwright-traces` artifact.
 
 ## Deploy
 

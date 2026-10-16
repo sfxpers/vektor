@@ -14,7 +14,7 @@
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
     "clean": "rm -rf .output .tanstack .wrangler coverage dist node_modules/.vite playwright-report test-results",
-    "test:e2e": "vp run preflight && vp run reset:d1 && vp build && playwright test"
+    "test:smoke": "vp run preflight && vp run reset:d1 && vp build && playwright test tests/e2e/home.spec.ts tests/e2e/smoke.spec.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

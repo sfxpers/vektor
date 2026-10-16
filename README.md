@@ -17,7 +17,7 @@ vp exec playwright install chromium webkit
 vp run dev                            # applies local D1 migrations, then http://127.0.0.1:5173
 ```
 
-Copy `.dev.vars.example` to `.dev.vars` if it is not created for you. All email goes through Resend (`RESEND_API_KEY` required, even locally). Tender analysis uses the Workers AI binding: wrangler must be logged in to the Cloudflare account (`vp exec wrangler login`).
+Copy `.dev.vars.example` to `.dev.vars` if it is not created for you. Its `ENVIRONMENT="local"` keeps local runs off outside services ([`src/lib/ports.ts`](src/lib/ports.ts)): email lands in an in-memory mailbox (`GET /api/dev/mail`) instead of Resend, and tender analysis uses a deterministic stand-in instead of the Workers AI binding. Production sets no `ENVIRONMENT`, so it always uses Resend and Workers AI.
 
 ## Commands
 
@@ -39,7 +39,7 @@ UI uses shadcn/ui (`base-nova`). Add components with:
 vp dlx shadcn@latest add button --yes
 ```
 
-CI ([`.github/workflows/check.yml`](.github/workflows/check.yml)) runs `vp check` and `vp test run` on Ubuntu for every pull request and every push to `main`. `vp run test:e2e` runs locally: it sends real email through Resend and real tender analyses through Workers AI, so it needs a working `RESEND_API_KEY` in `.dev.vars` and `vp exec wrangler login`.
+CI ([`.github/workflows/check.yml`](.github/workflows/check.yml)) runs `vp check`, `vp test run` and `vp run test:e2e` (Chromium and WebKit) on Ubuntu for every pull request and every push to `main`. The e2e run needs no secrets or Cloudflare login: it builds with `.dev.vars.example`, whose `ENVIRONMENT="local"` swaps Resend and Workers AI for the local mailbox and the tender stand-in. On failure, the job uploads Playwright traces as the `playwright-traces` artifact.
 
 ## Deploy
 

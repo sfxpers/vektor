@@ -1,5 +1,21 @@
 import { defineConfig, devices } from "@playwright/test";
 
+/**
+ * Keeps Chrome's save-password bubble and autofill UI from covering the auth
+ * controls these specs click. (Historically these flags were credited with
+ * fixing intermittent auth-page contrast violations; those were really axe
+ * measuring the page before styles.css applied, which
+ * expectNoA11yViolations() in tests/e2e/helpers.ts now guards.) Chromium
+ * projects only: WebKit on Linux refuses to launch with unknown flags.
+ */
+const chromeLaunchOptions = {
+  args: [
+    "--disable-features=PasswordManager,AutofillServerCommunication,PasswordManagerOnboarding",
+    "--disable-save-password-bubble",
+    "--autofill-test-by-default=false",
+  ],
+};
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -19,21 +35,13 @@ export default defineConfig({
     // (including the smoke journey) against a `wrangler versions upload` preview
     baseURL: process.env.E2E_BASEURL ?? "http://127.0.0.1:4173",
     trace: "retain-on-failure",
-    // Keeps Chrome's save-password bubble and autofill UI from covering the
-    // auth controls these specs click. (Historically these flags were credited
-    // with fixing intermittent auth-page contrast violations; those were really
-    // axe measuring the page before styles.css applied, which
-    // expectNoA11yViolations() in tests/e2e/helpers.ts now guards.)
-    launchOptions: {
-      args: [
-        "--disable-features=PasswordManager,AutofillServerCommunication,PasswordManagerOnboarding",
-        "--disable-save-password-bubble",
-        "--autofill-test-by-default=false",
-      ],
-    },
   },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: /mobile\.spec\.ts/ },
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"], launchOptions: chromeLaunchOptions },
+      testIgnore: /mobile\.spec\.ts/,
+    },
     { name: "webkit", use: { ...devices["Desktop Safari"] }, testIgnore: /mobile\.spec\.ts/ },
     {
       // Touch + short-viewport behaviour (off-canvas nav, date picker, dialog
@@ -44,6 +52,7 @@ export default defineConfig({
       testMatch: /mobile\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
+        launchOptions: chromeLaunchOptions,
         viewport: { width: 390, height: 844 },
         hasTouch: true,
       },

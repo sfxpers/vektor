@@ -3,11 +3,12 @@ import { expectNoA11yViolations, signUpWithCompany } from "./helpers";
 import { makePdf, pdfFixture } from "./fixtures";
 
 test.describe("Tender Analysis Core", () => {
-  test("upload → Workers AI → score/risk/verdict → returnables toggle → ownership isolation", async ({
+  test("upload → tender analysis → score/risk/verdict → returnables toggle → ownership isolation", async ({
     page,
   }) => {
-    // Real Workers AI inference takes ~20-60s; the default 60s test timeout
-    // does not cover signup + company setup + analysis.
+    // Local runs analyse with the stand-in (src/lib/ports.ts); a remote
+    // preview's real Workers AI inference takes ~20-60s, which the default 60s
+    // test timeout does not cover with signup + company setup.
     test.setTimeout(240_000);
     // Sign up User A. The Level 1 / 80-20 mapping is asserted on the score
     // cards below, and 4EB matches the tender fixture's CIDB token.
@@ -30,7 +31,8 @@ test.describe("Tender Analysis Core", () => {
 
     await page.getByTestId("analyze-btn").click();
     await expect(page.getByTestId("results-section")).toBeVisible({ timeout: 120_000 });
-    await expect(page.getByTestId("credits-balance")).toHaveText("0");
+    // The 5-analysis trial grant, less this one.
+    await expect(page.getByTestId("credits-balance")).toHaveText("4");
     await expect(page.getByTestId("fit-score-card")).toBeVisible();
     await expect(page.getByTestId("gonogo-gauge")).toBeVisible();
     await expect(page.getByTestId("verdict-label")).toBeVisible();
@@ -136,7 +138,8 @@ test.describe("Tender Analysis Core", () => {
   });
 
   test("credit consumption refund on failure - invalid pdf handling", async ({ page }) => {
-    // Covers a real Workers AI analysis, so allow headroom over the 60s default.
+    // Covers a full analysis (real Workers AI on a remote preview), so allow
+    // headroom over the 60s default.
     test.setTimeout(240_000);
     await signUpWithCompany(page, "Credit User", { companyName: "CreditCo Pty Ltd" });
 
@@ -148,7 +151,8 @@ test.describe("Tender Analysis Core", () => {
       return ((await (await fetch(`/api/billing/credits/${id}`)).json()) as { credits: number })
         .credits;
     }, companyId);
-    expect(balanceBefore).toBe(1);
+    // The 5-analysis trial grant.
+    expect(balanceBefore).toBe(5);
 
     const blankPdf = await makePdf("blank.pdf", []);
     const failed = await page.request.post("/api/tenders/analyze", {
@@ -166,7 +170,7 @@ test.describe("Tender Analysis Core", () => {
       return ((await (await fetch(`/api/billing/credits/${id}`)).json()) as { credits: number })
         .credits;
     }, companyId);
-    expect(balanceAfterFailure).toBe(1);
+    expect(balanceAfterFailure).toBe(5);
 
     const success = await page.request.post("/api/tenders/analyze", {
       multipart: {

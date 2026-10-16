@@ -8,7 +8,9 @@ import { signUpWithCompany } from "./helpers";
 /**
  * Optional live packs in tests/fixtures/tenders/ (gitignored PDFs). CI skips
  * when the files are absent. Each test signs up a fresh company so the three
- * packs can run independently on the one trial credit.
+ * packs can run independently on a fresh trial grant. They test real Workers
+ * AI extraction, so run them without ENVIRONMENT="local" (the local stand-in
+ * reads only simple patterns).
  */
 const TENDERS = join(import.meta.dirname, "../fixtures/tenders");
 const STELLENBOSCH = join(TENDERS, "stellenbosch-bsm-126-26.pdf");
@@ -26,7 +28,7 @@ async function analyzePdf(page: Page, name: string, company: { cidb: string }, p
   await page.getByTestId("file-input").setInputFiles(pdf);
   await page.getByTestId("analyze-btn").click();
   await expect(page.getByTestId("results-section")).toBeVisible({ timeout: 180_000 });
-  await expect(page.getByTestId("credits-balance")).toHaveText("0");
+  await expect(page.getByTestId("credits-balance")).toHaveText("4");
   const verdict = (await page.getByTestId("verdict-label").innerText()).trim();
   expect(["GO", "CAUTION", "NO-GO"]).toContain(verdict);
   return {

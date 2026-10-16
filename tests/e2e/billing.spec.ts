@@ -8,6 +8,15 @@ import {
   signUpWithCompany,
 } from "./helpers";
 
+/**
+ * A rand amount as formatRand prints it in en-ZA ("R1 299,00"). The engine's
+ * ICU data decides the separators: Linux WebKitGTK prints "R399.00", so
+ * either separator passes.
+ */
+function rand(whole: string): RegExp {
+  return new RegExp(`R${whole.replace(" ", "[\\s,]?")}[.,]00`);
+}
+
 test.describe("EFT Billing", () => {
   test("catalog display → request → bank details → proof upload → status pending_review → my-requests → cancellation", async ({
     page,
@@ -34,10 +43,10 @@ test.describe("EFT Billing", () => {
     await expect(page.getByTestId("popular-badge-tc_pro_monthly_v2")).toBeVisible();
     await expect(page.getByTestId("popular-badge-tc_pro_monthly_v2")).toContainText("Popular");
     // Subscription grid should show R399, R1299, R2499, R149
-    await expect(page.getByTestId("package-tc_starter_monthly_v2")).toContainText("R399,00");
-    await expect(page.getByTestId("package-tc_pro_monthly_v2")).toContainText("R1 299,00");
-    await expect(page.getByTestId("package-tc_scale_monthly_v2")).toContainText("R2 499,00");
-    await expect(page.getByTestId("package-tc_credits_1_v2")).toContainText("R149,00");
+    await expect(page.getByTestId("package-tc_starter_monthly_v2")).toContainText(rand("399"));
+    await expect(page.getByTestId("package-tc_pro_monthly_v2")).toContainText(rand("1 299"));
+    await expect(page.getByTestId("package-tc_scale_monthly_v2")).toContainText(rand("2 499"));
+    await expect(page.getByTestId("package-tc_credits_1_v2")).toContainText(rand("149"));
     // No Stripe mention
     await expect(page.locator("body")).not.toContainText("Stripe");
     // Pay by EFT buttons exist
@@ -62,7 +71,7 @@ test.describe("EFT Billing", () => {
     await generateEftReference(page);
     const ref = await page.getByTestId("eft-reference").textContent();
     expect(ref).toMatch(/VEK-[A-Z0-9]{6}/);
-    await expect(page.getByTestId("eft-amount")).toContainText("R399,00");
+    await expect(page.getByTestId("eft-amount")).toContainText(rand("399"));
     // The dialog must mirror the bank details the Worker serves, not values
     // copied out of a local .dev.vars.
     const bank = await eftBankDetails(page);

@@ -7,9 +7,28 @@ export const TEST_PASSWORD = "correct-horse-battery-staple-123";
 /**
  * Recipient Resend's test-mode keys accept. Live keys deliver to anything,
  * but `re_test_…` keys reject ordinary domains (including @example.com) with
- * 422 — so every flow that must reach `sent` addresses mail here instead.
+ * 422. Only a remote preview sends through Resend; local runs read the local
+ * mailbox instead (see localMail).
  */
 export const RESEND_TEST_INBOX = "delivered@resend.dev";
+
+export interface LocalEmail {
+  id: string;
+  to: string;
+  subject: string;
+  html: string;
+  sentAt: string;
+}
+
+/**
+ * What the local mailbox (src/lib/ports.ts) holds for one recipient, newest
+ * first. Local runs set ENVIRONMENT="local", so no email reaches Resend.
+ */
+export async function localMail(page: Page, to: string): Promise<LocalEmail[]> {
+  const response = await page.request.get(`/api/dev/mail?to=${encodeURIComponent(to)}`);
+  expect(response.ok(), 'GET /api/dev/mail needs ENVIRONMENT="local" in .dev.vars').toBe(true);
+  return (await response.json()) as LocalEmail[];
+}
 
 /** Unique per-test email — Date.now() + random suffix avoids cross-worker collisions. */
 export function uniqueEmail(prefix = "vektor"): string {
@@ -32,6 +51,25 @@ export function daysFromNow(days: number): string {
 }
 
 /**
+ * Wait until React has hydrated a server-rendered element: React tags each
+ * hydrated DOM node with `__reactProps$…`. Typing into a form before then
+ * leaves React's state empty, so the submit handler sees blank fields — on a
+ * slow CI runner the fills can land inside that window.
+ */
+export async function waitForHydration(page: Page, testId: string): Promise<void> {
+  await page.waitForFunction(
+    (id) => {
+      const element = document.querySelector(`[data-testid="${id}"]`);
+      return (
+        element !== null && Object.keys(element).some((key) => key.startsWith("__reactProps$"))
+      );
+    },
+    testId,
+    { timeout: 20000 },
+  );
+}
+
+/**
  * Sign up through the UI and wait until the authenticated chrome confirms the
  * session, so no later step races the post-signup redirect.
  */
@@ -43,6 +81,7 @@ export async function signUp(
   const email = opts.email ?? uniqueEmail(name);
   await page.goto(opts.ref ? `/signup?ref=${opts.ref}` : "/signup");
   await expect(page.getByTestId("signup-form")).toBeVisible({ timeout: 20000 });
+  await waitForHydration(page, "signup-form");
   if (opts.ref) {
     await expect(page.getByTestId("signup-referral-banner")).toBeVisible();
   }
@@ -123,6 +162,7 @@ export async function login(page: Page, email: string, password = TEST_PASSWORD)
   await page.goto("/login");
   await page.waitForLoadState("networkidle");
   await expect(page.getByTestId("login-form")).toBeVisible({ timeout: 10000 });
+  await waitForHydration(page, "login-form");
   await page.getByTestId("input-email").fill(email);
   await page.getByTestId("input-password").fill(password);
   await page.getByTestId("submit-login").click();

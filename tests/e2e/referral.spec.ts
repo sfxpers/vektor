@@ -173,7 +173,8 @@ test.describe("Referrals", () => {
       const response = await fetch(`/api/admin/companies/${companyId}`);
       return (await response.json()) as { credits: number };
     }, refereeCompanyId);
-    expect(refereeCompany.credits).toBe(21);
+    // 5 signup trial credits + 20 Pro credits.
+    expect(refereeCompany.credits).toBe(25);
 
     // Check referral stats as admin/referrer (still logged in as referrer)
     const stats = await page.evaluate(async () => {
@@ -226,8 +227,8 @@ test.describe("Referrals", () => {
       };
       return { companyId, credits: credits.credits };
     });
-    // 1 signup trial credit + 5 referral reward credits.
-    expect(referrerCompany.credits).toBe(6);
+    // 5 signup trial credits + 5 referral reward credits.
+    expect(referrerCompany.credits).toBe(10);
 
     // Deleting the credited company must retain reward history and cap usage.
     const deleteCompany = await page.request.delete(

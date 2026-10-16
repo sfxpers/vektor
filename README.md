@@ -22,7 +22,7 @@ Copy `.dev.vars.example` to `.dev.vars` if it is not created for you. Its `ENVIR
 
 ```sh
 vp check                   # format, lint, and type check (vp check --fix to fix)
-vp run check:tokens        # UI colours come from src/styles.css
+vp run check:tokens        # every colour and size is a token from src/styles.css
 vp test                    # Vitest unit tests
 vp run test:smoke         # resets local D1, builds, then the public pages and the credit chain in the installed Chrome
 vp build                   # Cloudflare Workers production build

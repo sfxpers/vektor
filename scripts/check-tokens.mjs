@@ -1,11 +1,9 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
-// Colours in the UI come from src/styles.css. Pass --spacing to also require
-// the 4px grid. Email HTML and PDF fills live outside these paths: mail
-// clients and pdf-lib cannot read the theme.
-const checkSpacing = process.argv.includes("--spacing");
-
+// Colours and sizes in the UI come from src/styles.css, on the 4px grid.
+// Email HTML and PDF fills live outside these paths: mail clients and pdf-lib
+// cannot read the theme.
 const skip = new Set([
   "src/components/google-icon.tsx", // Google's own logo colours
 ]);
@@ -22,18 +20,13 @@ const rules = [
   { name: "an oklch() colour", pattern: /oklch\(/ },
   // A hex colour has a letter, or six digits; "#111" alone is an issue number.
   { name: "a hex colour", pattern: /#(?=[0-9a-f]{0,5}[a-f])[0-9a-f]{3}\b|#[0-9a-f]{6}\b/i },
+  { name: "an arbitrary value", pattern: /\b[a-z][a-z0-9-]*-\[[^\]\s]+\]/ },
+  {
+    name: "a half step off the 4px grid",
+    pattern:
+      /\b-?(?:p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|space-x|space-y|size|inset|top|right|bottom|left)-\d+\.5\b/,
+  },
 ];
-
-if (checkSpacing) {
-  rules.push(
-    { name: "an arbitrary value", pattern: /\b[a-z][a-z0-9-]*-\[[^\]\s]+\]/ },
-    {
-      name: "a half step off the 4px grid",
-      pattern:
-        /\b-?(?:p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|space-x|space-y|size|inset|top|right|bottom|left)-\d+\.5\b/,
-    },
-  );
-}
 
 const found = [];
 for (const file of files) {
@@ -54,5 +47,4 @@ if (found.length > 0) {
   process.exit(1);
 }
 
-const grid = checkSpacing ? ", on the 4px grid" : "";
-console.log(`Tokens only${grid}: ${files.length} files.`);
+console.log(`Tokens only, on the 4px grid: ${files.length} files.`);

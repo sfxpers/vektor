@@ -39,7 +39,7 @@ UI uses shadcn/ui (`base-nova`). Add components with:
 vp dlx shadcn@latest add button --yes
 ```
 
-CI ([`.github/workflows/check.yml`](.github/workflows/check.yml)) runs `vp check`, `vp run check:tokens`, `vp test run` and `vp run test:smoke` on Ubuntu for every pull request and every push to `main`. The smoke run needs no secrets or Cloudflare login: it builds with `.dev.vars.example`, whose `ENVIRONMENT="local"` swaps Resend and Workers AI for the local mailbox and the tender stand-in. It opens the public pages and the one chain that spends a credit, in the installed Chrome. The other files in `tests/e2e` are not part of that gate. On failure, the job uploads Playwright traces as the `playwright-traces` artifact.
+CI ([`.github/workflows/check.yml`](.github/workflows/check.yml)) runs `vp check`, `vp run check:tokens`, `vp test run` and `vp run test:smoke` on Ubuntu for every pull request and every push to `main`. The smoke run needs no secrets or Cloudflare login: it builds with `.dev.vars.example`, whose `ENVIRONMENT="local"` swaps Resend and Workers AI for the local mailbox and the tender stand-in. It opens the public pages and the one chain that spends a credit, in the installed Chrome. On failure, the job uploads Playwright traces as the `playwright-traces` artifact.
 
 ## Deploy
 

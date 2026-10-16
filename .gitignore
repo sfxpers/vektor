@@ -43,8 +43,6 @@ playwright/.cache/
 # Scratch - local issue tracker
 .scratch/
 
-# Large municipal tender PDFs used by tests/e2e/tender-municipal.spec.ts
-tests/fixtures/tenders/*.pdf
 .vitest/
 
 # Local review notes and screenshots

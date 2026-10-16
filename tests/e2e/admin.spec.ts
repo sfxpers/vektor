@@ -533,8 +533,10 @@ test.describe("Admin Console", () => {
       }>;
       renewalBalances.push(companyRows.find((company) => company.id === companyId)!.credits);
     }
+    // The 5-analysis trial plus the first Starter grant (5) already sit at
+    // Starter's 2× rollover cap of 10, so neither renewal adds credits.
     expect(renewalBalances).toEqual([10, 10]);
-    expect(renewalGrants).toEqual([4, 0]);
+    expect(renewalGrants).toEqual([0, 0]);
     const paymentDetail = await page.evaluate(async (pid: string) => {
       const r = await fetch(`/api/eft/admin/all`);
       const data = (await r.json()) as {

@@ -29,7 +29,12 @@ export default defineConfig({
   plugins: lazyPlugins(() => [
     devtools(),
     tailwindcss(),
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    cloudflare({
+      viteEnvironment: { name: "ssr" },
+      // The plugin default is remote, which needs a Cloudflare login. Local
+      // runs analyse tenders with a stand-in instead (src/lib/ports.ts).
+      remoteBindings: false,
+    }),
     tanstackStart(),
     viteReact(),
   ]),

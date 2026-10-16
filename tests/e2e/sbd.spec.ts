@@ -106,9 +106,6 @@ test.describe("SBD PDF generation", () => {
     await expect(page.getByTestId(`sbd4-btn-${tenderId}`)).toBeVisible({ timeout: 10000 });
     await expect(page.getByTestId(`sbd61-btn-${tenderId}`)).toBeVisible({ timeout: 10000 });
 
-    // The trial grant is exactly one credit — a second analysis is refused and
-    // the credit ledger stays consistent (see tender.spec for the same rule).
-
     // Ownership isolation: User B cannot download User A's tender SBDs
     const contextB = await browser.newContext();
     const pageB = await contextB.newPage();

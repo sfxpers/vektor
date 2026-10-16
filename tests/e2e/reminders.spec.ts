@@ -1,12 +1,5 @@
 import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
-import {
-  daysFromNow,
-  login,
-  pickDate,
-  RESEND_TEST_INBOX,
-  signUp,
-  signUpWithCompany,
-} from "./helpers";
+import { daysFromNow, localMail, login, pickDate, signUp, signUpWithCompany } from "./helpers";
 import { promoteLocalUserToAdmin } from "./local-admin";
 import { makePdf } from "./fixtures";
 
@@ -24,14 +17,15 @@ async function createLocalAdmin(browser: Browser): Promise<{
   return { context, page };
 }
 
-test.describe.serial("Reminders and Cron (Resend + sent_reminders)", () => {
+test.describe.serial("Reminders and Cron (local mailbox + sent_reminders)", () => {
   test("7-day expiry triggers one email, second sweep does not duplicate", async ({
     page,
     browser,
   }) => {
-    await signUpWithCompany(page, "Reminder Test User", {
+    // The contact defaults to the user's own unique address, so the local
+    // mailbox holds only this journey's mail for it.
+    const contactEmail = await signUpWithCompany(page, "Reminder Test User", {
       companyName: "Reminder Test Pty Ltd",
-      contactEmail: RESEND_TEST_INBOX,
       cidb: "4GB, 6CE",
       bbbeeLevel: "1",
     });
@@ -81,8 +75,12 @@ test.describe.serial("Reminders and Cron (Resend + sent_reminders)", () => {
         detail.companyId === companyId && detail.threshold === 7 && detail.status === "sent",
     );
     expect(ourSent1).toHaveLength(1);
-    // Email subject/body content is covered by tests/unit/reminder-template.test.ts;
-    // the sweep details above prove exactly one send was issued for this company.
+    // Email body content is covered by tests/unit/reminder-template.test.ts;
+    // here the one send reached the contact's mailbox.
+    const mail = await localMail(page, contactEmail);
+    expect(mail).toHaveLength(1);
+    expect(mail[0]!.id).toBe(ourSent1[0]!.resendId);
+    expect(mail[0]!.subject).toMatch(/Tax Clearance/i);
 
     const sweep2 = await admin.page.request.post("/api/reminders/sweep");
     expect(sweep2.ok()).toBeTruthy();
@@ -94,6 +92,7 @@ test.describe.serial("Reminders and Cron (Resend + sent_reminders)", () => {
           detail.companyId === companyId && detail.threshold === 7 && detail.status === "sent",
       ),
     ).toHaveLength(0);
+    expect(await localMail(page, contactEmail)).toHaveLength(1);
 
     // Deleting the document removes its reminder claim and the document from future sweeps.
     const documentsResponse = await page.request.get(`/api/documents/company/${companyId}`);
@@ -132,9 +131,8 @@ test.describe.serial("Reminders and Cron (Resend + sent_reminders)", () => {
   });
 
   test("threshold 0 reports an expiry-day send", async ({ page, browser }) => {
-    await signUpWithCompany(page, "Reminder Test User", {
+    const contactEmail = await signUpWithCompany(page, "Reminder Test User", {
       companyName: "Reminder Test Pty Ltd",
-      contactEmail: RESEND_TEST_INBOX,
       cidb: "4GB, 6CE",
       bbbeeLevel: "1",
     });
@@ -170,15 +168,17 @@ test.describe.serial("Reminders and Cron (Resend + sent_reminders)", () => {
           detail.companyId === companyId && detail.threshold === 0 && detail.status === "sent",
       ),
     ).toHaveLength(1);
+    const mail = await localMail(page, contactEmail);
+    expect(mail).toHaveLength(1);
+    expect(mail[0]!.subject).toMatch(/B-BBEE/i);
     await admin.context.close();
   });
 
   test("company test alert sends one email to the contact and rejects foreign companies", async ({
     page,
   }) => {
-    await signUpWithCompany(page, "Test Alert Contractor", {
+    const contactEmail = await signUpWithCompany(page, "Test Alert Contractor", {
       companyName: "Test Alert Pty Ltd",
-      contactEmail: RESEND_TEST_INBOX,
     });
     const companies = (await (await page.request.get("/api/companies")).json()) as Array<{
       id: string;
@@ -189,9 +189,12 @@ test.describe.serial("Reminders and Cron (Resend + sent_reminders)", () => {
     expect(response.ok()).toBe(true);
     const body = (await response.json()) as { status?: string; to?: string; resendId?: string };
     expect(body.status).toBe("sent");
-    expect((body.to ?? "").toLowerCase()).toBe(RESEND_TEST_INBOX);
-    // resendId is a real Resend message id now — the send went out.
-    expect(body.resendId).toBeTruthy();
+    expect((body.to ?? "").toLowerCase()).toBe(contactEmail.toLowerCase());
+    // The returned message id is the email the local mailbox received.
+    const mail = await localMail(page, contactEmail);
+    expect(mail).toHaveLength(1);
+    expect(mail[0]!.id).toBe(body.resendId);
+    expect(mail[0]!.subject).toBe("[Vektor] Test alert — Compliance Guardian");
 
     // A random id is indistinguishable from a missing company (no enumeration).
     const foreign = await page.request.post("/api/reminders/test/does-not-exist");

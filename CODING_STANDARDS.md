@@ -4,7 +4,7 @@ The judgement calls a reviewer checks. Anything mechanical is a check instead: `
 
 ## Sources of truth
 
-GitHub Issues, then `docs/adr/`, then `GLOSSARY.md`. Code is never one. Name things with the glossary's terms and none of its _Avoid_ words. A change that contradicts an ADR waits for approval. That includes the Catalog prices, the five Credits on a new Company, the Verdict bands, the Referral caps, and who may confirm an EFT.
+GitHub Issues, then `docs/adr/`, then `GLOSSARY.md`. Name things with the glossary's terms and none of its _Avoid_ words. A change that contradicts an ADR waits for approval. A Catalog price, the five Credits on a new Company, a Verdict threshold, and a Referral amount or cap wait for approval too. Those live in the code.
 
 ## Stack first
 

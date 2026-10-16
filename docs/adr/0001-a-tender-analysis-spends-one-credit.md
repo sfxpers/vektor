@@ -1,3 +1,3 @@
 # A tender analysis spends one Credit
 
-Uploading a Tender PDF spends one Credit before the file is stored or scored. The update itself requires `credits > 0`, so two analyses at once cannot drive the balance below zero. If storage or scoring fails, that Credit is returned. Charging after a successful score was rejected: a failure would still have done the work, and a concurrent pair could both pass a balance check that lived outside the write.
+An analysis spends its Credit when the Tender is accepted, before the file is stored or scored, and the Credit comes back if that work fails. Charging only after a successful score was rejected: a failure would still have done the work, and two requests could both pass a balance check that was not part of the write.

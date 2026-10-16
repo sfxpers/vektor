@@ -1,45 +1,45 @@
 # Vektor
 
-South African tender compliance for contractors. A person signs up, sets up a Company, keeps its Compliance documents current, spends a Credit to analyse a Tender, and pays for Credits by EFT.
+South African tender compliance for contractors. A Company keeps Compliance documents current, spends Credits to analyse Tenders, and buys Credits by EFT.
 
 ## Language
 
 **Company**:
-The contractor profile a signed-in person registers: its name, CIPC number, and the statutory fields the tender forms read. One person may hold more than one Company. Creating one grants five Credits, in the same write as the Company.
+The contractor a signed-in person registers, identified by its name and CIPC number. One person may hold more than one.
 _Avoid_: Account, organisation, tenant, workspace
 
 **Credit**:
-The unit a Tender analysis spends. The balance cannot go below zero; the guard sits inside the update. A failed analysis returns the Credit it spent.
+The unit a Company spends to have a Tender analysed.
 _Avoid_: Token, seat, licence
 
 **Tender**:
-The tender PDF a Company uploads to be scored against its Compliance documents.
+The tender a Company submits to be scored against its Compliance documents.
 _Avoid_: Bid, opportunity, RFP
 
 **Analysis**:
-One scoring of a Tender. It spends one Credit.
-_Avoid_: Scan, audit, report as the unit
+The scoring of one Tender for a Company.
+_Avoid_: Scan, audit, report
 
 **Verdict**:
-The band of an analysis score. 75 and above is GO, 50 and above is CAUTION, below 50 is NO-GO. A missing score is UNKNOWN.
-_Avoid_: Pass, fail, recommendation as the stored word
+The band of an analysis score: GO at 75 and above, CAUTION at 50 and above, NO-GO below that, and UNKNOWN when the score is missing.
+_Avoid_: Pass, fail, recommendation
 
 **Compliance document**:
-A file the Company keeps current: a tax pin, COIDA, B-BBEE, a bargaining-council certificate, or a director's identity document. Reminders go out at 30 days, 7 days, and on the day it expires.
-_Avoid_: Certificate as the umbrella, attachment
+A statutory file a Company keeps current: a tax pin, COIDA, B-BBEE, a bargaining-council certificate, or a director's identity document.
+_Avoid_: Certificate, attachment
 
 **EFT**:
-The only way to buy Credits. The buyer pays the Catalog price into the business bank account and uploads proof. Credits land when an Admin confirms the payment, and not when the proof is uploaded.
+A bank transfer that buys Credits. The Credits belong to the Company once an Admin confirms the payment.
 _Avoid_: Stripe, card, checkout, wallet
 
 **Catalog**:
-The four prices in `src/lib/billing-catalog.ts`. Starter, Pro, and Scale are monthly Credit allowances. Single Analysis is one Credit, once. Amounts are cents in ZAR. The page reads the Catalog; it does not restate the prices.
-_Avoid_: Price list in the page, plan copy hardcoded beside the catalog
+The prices of Credits: three monthly allowances, Starter, Pro, and Scale, and one Single Analysis.
+_Avoid_: Price list, plan copy
 
 **Admin**:
-Staff who confirm or reject an EFT and who can see every Company. Confirming is the act that grants paid Credits.
+Staff who can see every Company, and who confirm or reject an EFT.
 _Avoid_: Moderator, support, owner
 
 **Referral**:
-An invite. The referrer earns Credits when an Admin confirms the invited person's first paid subscription EFT. The invited person earns none. A person can be referred once, cannot refer themselves, and a referrer is capped at 5 rewards in a UTC month and 20 in total.
+An invite from one person to another. The reward belongs to the referrer, after the invited person's first paid subscription is confirmed.
 _Avoid_: Affiliate, bounty, signup bonus

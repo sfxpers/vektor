@@ -73,7 +73,7 @@ export const auth = betterAuth({
       clientSecret: runtimeEnv.GOOGLE_CLIENT_SECRET ?? "",
     },
   },
-  // `nub run dev` is :5173 and preview/e2e is :4173. Trust both local
+  // `vp run dev` is :5173 and preview/e2e is :4173. Trust both local
   // origins so cookies and CSRF checks work regardless of which port is up.
   // Configured public URLs are expanded with their apex/www counterparts so
   // login works on both https://vektorhq.co.za and https://www.vektorhq.co.za.

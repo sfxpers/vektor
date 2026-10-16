@@ -52,7 +52,7 @@ export default defineConfig({
   webServer: process.env.E2E_BASEURL
     ? undefined
     : {
-        command: "nub run preview --host 127.0.0.1 --port 4173 --strictPort",
+        command: "vp preview --host 127.0.0.1 --port 4173 --strictPort",
         reuseExistingServer: process.env.E2E_REUSE === "1" && !process.env.CI,
         stderr: "pipe",
         stdout: "pipe",

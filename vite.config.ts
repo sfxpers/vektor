@@ -23,6 +23,11 @@ export default defineConfig({
       "react/react-in-jsx-scope": "off",
     },
   },
+  run: {
+    tasks: {
+      "check:tokens": "node scripts/check-tokens.mjs",
+    },
+  },
   resolve: { tsconfigPaths: true },
   // Lazy, so `vp check`, `vp lint`, and `vp fmt` read this file without
   // starting the plugins.

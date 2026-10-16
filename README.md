@@ -8,7 +8,7 @@ Production: [vektorhq.co.za](https://vektorhq.co.za)
 
 ## Setup
 
-[Vite+](https://viteplus.dev) (`vp`) runs everything: it uses the Node in `.node-version` and the pnpm in `package.json`, and ships Vite, Vitest, Oxlint, and Oxfmt as one set, pinned in `pnpm-workspace.yaml`. `vp install` also sets up the pre-commit hook, which checks what is staged.
+[Vite+](https://viteplus.dev) (`vp`) runs everything: it uses the Node in `.node-version` and the pnpm in `package.json`, and ships Vite, Vitest, Oxlint, and Oxfmt as one set, pinned in `pnpm-workspace.yaml`. `vp install` also sets up the pre-commit hook, which checks what is staged. `postinstall` writes `worker-configuration.d.ts` from `wrangler.jsonc` (`vp run cf-typegen` after changing it).
 
 ```sh
 curl -fsSL https://vite.plus | bash   # once per machine

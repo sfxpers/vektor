@@ -30,8 +30,6 @@ export default defineConfig({
         custom_domain: true,
       },
     ],
-    // Custom entry so Void can wrap TanStack fetch; cron jobs live in `crons/`.
-    main: "worker.ts",
     r2_buckets: [
       {
         binding: "STORAGE",

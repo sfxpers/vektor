@@ -46,7 +46,9 @@ export default defineConfig({
         migrations_dir: "./db/migrations",
       },
     ],
-    // Workers AI has no local simulation; local runs use a stand-in (src/lib/ports.ts).
+    // Workers AI has no local simulation; remote:true is required for preview.
+    // CI smoke therefore needs CLOUDFLARE_API_TOKEN (ENVIRONMENT=local still
+    // uses the stand-in in src/lib/ports.ts for analysis).
     ai: {
       binding: "AI",
       remote: true,

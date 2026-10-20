@@ -57,6 +57,11 @@ playwright/.cache
 
 # Agent worktrees
 .worktrees
+.void-wrangler.jsonc
+.void
+
+# Claude Code skill mirrors (canonical skills live in .agents/skills)
+.claude
 
 # Local database and auth state
 *.db

@@ -20,8 +20,9 @@ jobs:
       - run: vp check
       - run: vp run check:tokens
       - run: vp test run
-      # No secrets: preflight copies .dev.vars.example, whose ENVIRONMENT="local"
-      # keeps email and tender analysis on this machine (src/lib/ports.ts).
+      # No secrets: preflight copies docs/local.env.example → .env, whose
+      # ENVIRONMENT="local" keeps email and tender analysis on this machine
+      # (src/lib/ports.ts).
       # Installed Chrome. The public pages, then the one chain that spends a credit.
       - run: vp run test:smoke
         timeout-minutes: 15

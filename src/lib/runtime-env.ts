@@ -1,25 +1,8 @@
 import { env } from "cloudflare:workers";
 
 /** Secrets and vars configured for the Worker in addition to generated bindings. */
-export type RuntimeEnv = Cloudflare.Env & {
-  /** "local" in .env swaps in the local adapters (src/lib/ports.ts). */
-  ENVIRONMENT?: string;
-  APP_URL?: string;
-  BETTER_AUTH_URL?: string;
-  BETTER_AUTH_SECRET?: string;
-  GOOGLE_CLIENT_ID?: string;
-  GOOGLE_CLIENT_SECRET?: string;
-  EFT_BANK_NAME?: string;
-  EFT_ACCOUNT_HOLDER?: string;
-  EFT_ACCOUNT_NUMBER?: string;
-  EFT_BRANCH_CODE?: string;
-  EFT_ACCOUNT_TYPE?: string;
-  RESEND_API_KEY?: string;
-  EMAIL_FROM?: string;
-  SENDER_EMAIL?: string;
-  SENDER_NAME?: string;
-  SUPPORT_EMAIL?: string;
-};
+/** "local" in .env swaps in the local adapters (src/lib/ports.ts). */
+export type RuntimeEnv = Cloudflare.Env & typeof import("../../env").default;
 
 export const runtimeEnv = env as unknown as RuntimeEnv;
 

@@ -19,6 +19,7 @@ jobs:
           cache: true
       - run: vp check
       - run: vp run check:tokens
+      - run: vp run test:tooling
       - run: vp test run
       # Preflight copies docs/local.env.example → .env (ENVIRONMENT=local stand-ins
       # for email/analysis). Workers AI is remote:true, so preview still needs a
